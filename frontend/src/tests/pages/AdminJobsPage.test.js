@@ -36,7 +36,7 @@ describe("AdminJobsPage tests", () => {
         expect(await screen.findByText("Launch Jobs")).toBeInTheDocument();
         expect(await screen.findByText("Job Status")).toBeInTheDocument();
 
-        ["Test Job", "Update Courses Database", "Update Grade Info"].map(
+        ["Test Job", "Update Courses Database", "Update Grade Info", "Update Coures Over a Range of Quarters"].map(
             (jobName) => expect(screen.getByText(jobName)).toBeInTheDocument()
         );
 
@@ -119,5 +119,42 @@ describe("AdminJobsPage tests", () => {
         expect(axiosMock.history.post[0].url).toBe("/api/jobs/launch/updateCourses?quarterYYYYQ=20211&subjectArea=ANTH");
     });
 
+    test("user can submit the update course data by range job", async () => {
+        render(
+            <QueryClientProvider client={queryClient}>
+                <MemoryRouter>
+                    <AdminJobsPage />
+                </MemoryRouter>
+            </QueryClientProvider>
+        );
 
+        expect(await screen.findByText("Update Coures Over a Range of Quarters")).toBeInTheDocument();
+
+        const updateCoursesButton = screen.getByText("Update Coures Over a Range of Quarters");
+        expect(updateCoursesButton).toBeInTheDocument();
+        updateCoursesButton.click();
+
+        expect(await screen.findByTestId("TestJobForm-fail")).toBeInTheDocument();
+
+        const submitButton = screen.getByText("Update Courses");
+
+        const expectedKey = "BasicSearch.Subject-option-ANTH";
+        await waitFor(() => expect(screen.getByTestId(expectedKey).toBeInTheDocument));
+    
+        const selectStartQuarter = screen.getByLabelText("Start Quarter");
+        userEvent.selectOptions(selectStartQuarter, "20211");
+        const selectEndQuarter = screen.getByLabelText("End Quarter");
+        userEvent.selectOptions(selectEndQuarter, "20214");
+        const selectSubject = screen.getByLabelText("Subject Area");
+        expect(selectSubject).toBeInTheDocument();
+        userEvent.selectOptions(selectSubject, "ANTH");
+
+        expect(submitButton).toBeInTheDocument();
+
+        submitButton.click();
+
+        await waitFor(() => expect(axiosMock.history.post.length).toBe(1));
+
+        expect(axiosMock.history.post[0].url).toBe("/api/jobs/launch/updateCourses?startQuarterYYYYQ=20211&endQuarterYYYYQ=20214&subjectArea=ANTH");
+    });
 });

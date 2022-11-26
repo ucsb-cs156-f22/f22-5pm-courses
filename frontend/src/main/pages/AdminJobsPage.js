@@ -8,6 +8,7 @@ import JobComingSoon from "main/components/Jobs/JobComingSoon";
 
 import { useBackendMutation } from "main/utils/useBackend";
 import UpdateCoursesJobForm from "main/components/Jobs/UpdateCoursesJobForm";
+import UpdateCoursesRangeJobForm from "main/components/Jobs/UpdateCoursesRangeJobForm";
 
 const AdminJobsPage = () => {
 
@@ -53,6 +54,25 @@ const AdminJobsPage = () => {
         updateCoursesJobMutation.mutate(data);
     }
 
+     // ***** update courses range job *******
+
+     const objectToAxiosParamsUpdateCoursesRangeJob = (data) => ({
+        url: `/api/jobs/launch/updateCourses?startQuarterYYYYQ=${data.startQuarter}&endQuarterYYYYQ=${data.endQuarter}&subjectArea=${data.subject}`,
+        method: "POST"
+    });
+    // Stryker disable all
+    const updateCoursesJobRangeMutation = useBackendMutation(
+        objectToAxiosParamsUpdateCoursesRangeJob,
+        {},
+        ["/api/jobs/all"]
+    );
+    // Stryker enable all
+    const submitUpdateCoursesRangeJob = async (data) => {
+        console.log("submitUpdateCoursesRangeJob, data=", data);
+        updateCoursesJobRangeMutation.mutate(data);
+    }
+
+
     // Stryker disable all 
     const { data: jobs, error: _error, status: _status } =
         useBackend(
@@ -79,6 +99,10 @@ const AdminJobsPage = () => {
             name: "Update Grade Info",
             form: <JobComingSoon />
         },
+        {
+            name: "Update Coures Over a Range of Quarters",
+            form: <UpdateCoursesRangeJobForm callback={submitUpdateCoursesRangeJob}  />
+        }
     ]
 
 
