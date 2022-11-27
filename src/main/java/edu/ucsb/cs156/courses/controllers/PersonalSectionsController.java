@@ -5,6 +5,7 @@ import edu.ucsb.cs156.courses.entities.PSCourse;
 import edu.ucsb.cs156.courses.entities.User;
 import edu.ucsb.cs156.courses.errors.EntityNotFoundException;
 import edu.ucsb.cs156.courses.models.CurrentUser;
+import edu.ucsb.cs156.courses.models.PersonalSection;
 import edu.ucsb.cs156.courses.repositories.PersonalScheduleRepository;
 import edu.ucsb.cs156.courses.repositories.PSCourseRepository;
 import edu.ucsb.cs156.courses.services.UCSBCurriculumService;
@@ -76,6 +77,73 @@ public class PersonalSectionsController extends ApiController {
 
         }
         return sections;
+    }
+
+
+    @ApiOperation(value = "List all sections (user)")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping(value = "/user/all", produces = "application/json")
+    public ArrayList<PersonalSection> thisUsersCourses() throws JsonProcessingException {
+        CurrentUser currentUser = getCurrentUser();
+        Iterable<PSCourse> courses = coursesRepository.findAllByUserId(currentUser.getUser().getId());
+        
+        User us = currentUser.getUser();
+        PsId psId = courses.getPsId();
+
+        PersonalSchedule ps = personalScheduleRepository.findByIdAndUser(psId,us)
+                .orElseThrow(() -> new EntityNotFoundException(PersonalSchedule.class, psId));
+        ArrayList<Course> sections = new ArrayList<Course>();
+        ArrayList<String> jsons = new ArrayList<String>();
+        Iterable<PSCourse> courses = coursesRepository.findAllByPsId(psId);
+        ArrayList<String> jsons = new ArrayList<String>();
+
+        User us = currentUser.getUser();
+        ArrayList<PersonalSection> p_sections = new ArrayList<PersonalSection>();
+        for (PSCourse crs: courses) {
+
+            User us = currentUser.getUser();
+            long psId = crs.getPsId();
+
+            Long psId = crs.getPsId();
+            PersonalSchedule ps = personalScheduleRepository.findByIdAndUser(psId,us)
+                .orElseThrow(() -> new EntityNotFoundException(PersonalSchedule.class, psId));
+
+            User u = crs.getUser();
+            String qtr = ps.getQuarter();
+            String responseBody = ucsbCurriculumService.getJSONbyQtrEnrollCd(qtr, crs.getEnrollCd());
+            jsons.add(responseBody);
+            Course course = objectMapper.readValue(responseBody, Course.class);
+                
+            CourseInfo info = CourseInfo.builder()
+                .quarter(course.getQuarter())
+                .courseId(course.getCourseId())
+                .title(course.getTitle())
+                .description(course.getDescription())
+                .build();
+
+            // List<Section> s = course.getClassSections();
+
+            // for (Section section : s) {
+            //     PersonalSection psec = PersonalSection.builder()
+            //         .psCourse(crs)
+            //         .personalSchedule(ps)
+            //         .courseInfo(info)
+            //         .section(section)
+            //         .build();
+
+            //     p_sections.add(psec);
+            // }
+
+            PersonalSection psec = PersonalSection.builder()
+                .psCourse(crs)
+                .personalSchedule(ps)
+                .courseInfo(info)
+                // .section(course.getSection())
+                .build();
+
+            p_sections.add(psec);
+            }
+        return p_sections;
     }
 
 }

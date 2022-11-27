@@ -85,6 +85,12 @@ public class PersonalSectionsControllerTests extends ControllerTestCase {
                 .andExpect(status().is(403));
     }
 
+    @Test
+    public void api_all_sections__logged_out__returns_403() throws Exception {
+        mockMvc.perform(get("/api/personalSections/user/all"))
+                .andExpect(status().is(403));
+    }
+
 
 
     @WithMockUser(roles = { "USER" })
@@ -98,6 +104,18 @@ public class PersonalSectionsControllerTests extends ControllerTestCase {
         assertEquals(correct, true);
 
     }
+
+//     @WithMockUser(roles = { "USER" })
+//     @Test
+//     public void api_all_sections__user_logged_in__no_personal_schedule() throws Exception {
+
+//         MvcResult response = mockMvc.perform(get("/api/personalSections/user/all"))
+//                 .andExpect(status().is(404)).andReturn();
+//         String actual = response.getResponse().getContentAsString();
+//         boolean correct = actual.contains("EntityNotFoundException");
+//         assertEquals(correct, true);
+
+//     }
 
 
     @WithMockUser(roles = { "USER" })
@@ -124,6 +142,37 @@ public class PersonalSectionsControllerTests extends ControllerTestCase {
 
         // assert
         verify(coursesRepository, times(1)).findAllByPsId(13L);
+        verify(ucsbCurriculumService, times(1)).getJSONbyQtrEnrollCd("20221","59501");
+        String expectedJson = mapper.writeValueAsString(course);
+        expectedJson = "[" + expectedJson + "]";
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals(expectedJson, responseString);
+    }
+
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void api_all_sections__user_logged_in__returns_existing_course() throws Exception {
+        // arrange
+        User u = currentUserService.getCurrentUser().getUser();
+        PersonalSchedule ps = PersonalSchedule.builder().name("Name 1").description("Description 1").quarter("20221").user(u).id(13L)
+                .build();
+        PSCourse course1 = PSCourse.builder().id(1L).user(u).enrollCd("59501").psId(13L).build();
+        Course course = objectMapper.readValue(PersonalSectionsFixtures.ONE_COURSE, Course.class);
+        ArrayList<PSCourse> crs = new ArrayList<PSCourse>();
+        crs.add(course1);
+
+        when(personalscheduleRepository.findByIdAndUser(eq(13L), eq(u))).thenReturn(Optional.of(ps));
+        when((coursesRepository.findAllByUserId(eq(1L)))).thenReturn(crs);
+        when(ucsbCurriculumService.getJSONbyQtrEnrollCd(eq("20221"),eq("59501")))
+                .thenReturn(PersonalSectionsFixtures.ONE_COURSE);
+
+
+        // act
+        MvcResult response = mockMvc.perform(get("/api/personalSections/user/all"))
+                .andExpect(status().isOk()).andReturn();
+
+        // assert
+        verify(coursesRepository, times(1)).findAllByUserId(1L);
         verify(ucsbCurriculumService, times(1)).getJSONbyQtrEnrollCd("20221","59501");
         String expectedJson = mapper.writeValueAsString(course);
         expectedJson = "[" + expectedJson + "]";
