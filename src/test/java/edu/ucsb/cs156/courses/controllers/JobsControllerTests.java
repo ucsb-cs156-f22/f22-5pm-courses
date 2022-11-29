@@ -35,6 +35,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import edu.ucsb.cs156.courses.ControllerTestCase;
 import edu.ucsb.cs156.courses.collections.ConvertedSectionCollection;
 import edu.ucsb.cs156.courses.entities.User;
+import edu.ucsb.cs156.courses.jobs.UpdateCourseDataWithQuarterRangeJobFactory;
 import edu.ucsb.cs156.courses.jobs.UpdateCourseDataWithQuarterJobFactory;
 import edu.ucsb.cs156.courses.jobs.UpdateCourseDataJobFactory;
 import edu.ucsb.cs156.courses.entities.Job;
@@ -71,6 +72,9 @@ public class JobsControllerTests extends ControllerTestCase {
 
     @MockBean
     UpdateCourseDataWithQuarterJobFactory updateCourseDataWithQuarterJobFactory;
+
+    @MockBean
+    UpdateCourseDataWithQuarterRangeJobFactory updateCourseDataWithQuarterRangeJobFactory;
 
     @MockBean
     UpdateCourseDataJobFactory updateCourseDataJobFactory;
@@ -212,6 +216,21 @@ public class JobsControllerTests extends ControllerTestCase {
     public void admin_can_launch_update_courses_job_with_quarter() throws Exception {
         // act
         MvcResult response = mockMvc.perform(post("/api/jobs/launch/updateQuarterCourses?quarterYYYYQ=20231").with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        // assert
+        String responseString = response.getResponse().getContentAsString();
+        log.info("responseString={}", responseString);
+        Job jobReturned = objectMapper.readValue(responseString, Job.class);
+
+        assertNotNull(jobReturned.getStatus());
+    }
+
+    @WithMockUser(roles = { "ADMIN" })
+    @Test
+    public void admin_can_launch_update_courses_job_with_quarter_range() throws Exception {
+        // act
+        MvcResult response = mockMvc.perform(post("/api/jobs/launch/updateQuarterRangeCourses?quarterYYYYQ=20231").with(csrf()))
                 .andExpect(status().isOk()).andReturn();
 
         // assert
