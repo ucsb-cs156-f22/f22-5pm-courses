@@ -30,6 +30,7 @@ import edu.ucsb.cs156.courses.documents.CoursePage;
 import edu.ucsb.cs156.courses.documents.CoursePageFixtures;
 import edu.ucsb.cs156.courses.documents.Section;
 import edu.ucsb.cs156.courses.entities.Job;
+import edu.ucsb.cs156.courses.entities.UCSBSubject;
 import edu.ucsb.cs156.courses.services.UCSBCurriculumService;
 import edu.ucsb.cs156.courses.services.UCSBSubjectsService;
 import edu.ucsb.cs156.courses.services.jobs.JobContext;
@@ -60,6 +61,11 @@ public class UpdateCourseDataWithQuarterJobTests {
 
         List<ConvertedSection> result = coursePage.convertedSections();
 
+        List<UCSBSubject> mockList = new ArrayList<UCSBSubject>();
+        mockList.add(new UCSBSubject("CMPSC",  "Computer Science", "CMPSC", "ENGR", null, false));
+
+        when(ucsbSubjectsService.get()).thenReturn(mockList);
+
         UpdateCourseDataWithQuarterJob updateCourseDataWithQuarterJob = new UpdateCourseDataWithQuarterJob("20211", ucsbSubjectsService, ucsbCurriculumService,
                 convertedSectionCollection);
 
@@ -73,11 +79,13 @@ public class UpdateCourseDataWithQuarterJobTests {
         // Assert
 
         String expected = """
+                Updating courses for [20211]
                 Updating courses for [CMPSC 20211]
                 Found 14 sections
                 Storing in MongoDB Collection...
                 14 new sections saved, 0 sections updated, 0 errors
-                Courses for [CMPSC 20211] have been updated""";
+                Courses for [CMPSC 20211] have been updated
+                Courses for [20211] have been updated""";
 
         assertEquals(expected, jobStarted.getLog());
     }

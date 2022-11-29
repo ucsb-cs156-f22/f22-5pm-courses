@@ -72,7 +72,7 @@ public class UpdateCourseDataWithQuarterJob implements JobContextConsumer {
                 ctx.log("Courses for [" + subjectArea + " " + quarterYYYYQ + "] have been updated");
         }
 
-        ctx.log("Courses for [ " + quarterYYYYQ + "] have been updated");
+        ctx.log("Courses for [" + quarterYYYYQ + "] have been updated");
 
     }
 }

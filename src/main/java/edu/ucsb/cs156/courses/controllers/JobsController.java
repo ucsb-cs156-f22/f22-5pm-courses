@@ -88,6 +88,9 @@ public class JobsController extends ApiController {
         return jobService.runAsJob(updateCourseDataJob);
     }
 
+    @ApiOperation(value = "Launch Job to Update Course Data by quarter")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/launch/updateCoursesByQuarter")
     public Job launchUpdateCourseDataWithQuarterJob(
         @ApiParam("quarter (YYYYQ format)") @RequestParam String quarterYYYYQ
     ) {
