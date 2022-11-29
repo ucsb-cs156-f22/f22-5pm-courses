@@ -21,6 +21,8 @@ import edu.ucsb.cs156.courses.collections.ConvertedSectionCollection;
 import edu.ucsb.cs156.courses.entities.Job;
 import edu.ucsb.cs156.courses.jobs.UpdateCourseDataJob;
 import edu.ucsb.cs156.courses.jobs.UpdateCourseDataJobFactory;
+import edu.ucsb.cs156.courses.jobs.UpdateCourseDataWithQuarterRangeJob;
+import edu.ucsb.cs156.courses.jobs.UpdateCourseDataWithQuarterRangeJobFactory;
 import edu.ucsb.cs156.courses.jobs.TestJob;
 import edu.ucsb.cs156.courses.repositories.JobsRepository;
 import edu.ucsb.cs156.courses.services.jobs.JobService;
@@ -44,6 +46,9 @@ public class JobsController extends ApiController {
 
     @Autowired
     UpdateCourseDataJobFactory updateCourseDataJobFactory;
+
+    @Autowired
+    UpdateCourseDataWithQuarterRangeJobFactory updateCourseDataWithQuarterRangeJobFactory;
 
     @ApiOperation(value = "List all jobs")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -83,4 +88,18 @@ public class JobsController extends ApiController {
         return jobService.runAsJob(updateCourseDataJob);
     }
 
+    @ApiOperation(value = "Launch Job to Update Course Data using Quarter Range")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/launch/updateQuarterRangeCourses")
+    public Job launchUpdateCourseDataWithQuarterJob(
+        @ApiParam("quarter (YYYYQ format)") @RequestParam String quarterYYYYQ1,
+        @ApiParam("quarter (YYYYQ format)") @RequestParam String quarterYYYYQ2
+
+    ) {
+
+        UpdateCourseDataWithQuarterRangeJob updateCourseDataWithQuarterRangeJob = updateCourseDataWithQuarterRangeJobFactory.create(
+            quarterYYYYQ1, quarterYYYYQ2);
+
+        return jobService.runAsJob(updateCourseDataWithQuarterRangeJob);
+    }
 }
