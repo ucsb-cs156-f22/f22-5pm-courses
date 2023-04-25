@@ -52,20 +52,25 @@ jobs:
           folder: frontend/docs-qa-index 
           clean: false 
           target-folder: storybook-qa
-      # - name: Generate .md file to add to branch collection
-      #   working-directory: ./frontend
-      #   run: | 
-      #     BRANCH_DIR=_branches.tmp
-      #     mkdir -p $BRANCH_DIR
-      #     FILENAME=${BRANCH_DIR}/${{ env.BRANCH }}.md
-      #     rm -f $FILENAME
-      #     touch $FILENAME
-      #     echo "---" >> $FILENAME
-      #     echo "name: ${{  env.BRANCH  }}" >> $FILENAME
-      #     echo "actor: ${{ github.actor}}" >> $FILENAME
-      #     echo "pull_request_url: ${{ github.event.pull_request.html_url}}" >> $FILENAME
-      #     echo "pull_request_num: ${{ github.event.pull_request.number}}" >> $FILENAME
-      #     echo "---" >> $FILENAME
+      - name: Generate .md file to add to branch collection
+        working-directory: ./frontend
+        run: | 
+          git checkout gh-pages
+          BRANCH_DIR=docs-qa-index/_branches
+          mkdir -p $BRANCH_DIR
+          FILENAME=${BRANCH_DIR}/${{ env.BRANCH }}.md
+          rm -f $FILENAME
+          touch $FILENAME
+          echo "---" >> $FILENAME
+          echo "name: ${{  env.BRANCH  }}" >> $FILENAME
+          echo "actor: ${{ github.actor}}" >> $FILENAME
+          echo "pull_request_url: ${{ github.event.pull_request.html_url}}" >> $FILENAME
+          echo "pull_request_num: ${{ github.event.pull_request.number}}" >> $FILENAME
+          echo "---" >> $FILENAME
+          git add $FILENAME
+          git commit -m "Add branch ${{  env.BRANCH  }} to docs-qa repo"
+          git push origin gh-pages
+          
       # - name: Pushes branch
       #   uses: dmnemec/copy_file_to_another_repo_action@main
       #   env:
