@@ -69,10 +69,17 @@ jobs:
     - name: Enable GitHub Pages on gh-pages branch
       run: |
         echo '{"source":{"branch":"gh-pages","path":"/"}}' > enable-gh-pages.json
-        gh api /repos/OWNER/REPO/pages -X POST \
+        gh api /repos/${{github.repository}}/pages -X POST \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           --input enable-gh-pages.json
+    - name: Set link to GitHub Pages on home page 
+      run: |
+          OWNER_PLUS_REPOSITORY=${{github.repository}}
+          OWNER=${{ github.repository_owner }}
+          REPOSITORY=${OWNER_PLUS_REPOSITORY/$OWNER\//}
+          HOMEPAGE="https://${OWNER}.github.io/${REPOSITORY}"
+          gh repo edit ${OWNER_PLUS_REPOSITORY} --homepage ${HOMEPAGE}
           
 
      
