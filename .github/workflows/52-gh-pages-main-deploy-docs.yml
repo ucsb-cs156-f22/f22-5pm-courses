@@ -11,6 +11,7 @@ env:
 # Needed for JamesIves/github-pages-deploy-action@v4
 permissions:
   contents: write
+  pages: write
 
 jobs: 
   build-site:
