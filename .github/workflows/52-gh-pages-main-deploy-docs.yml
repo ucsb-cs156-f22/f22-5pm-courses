@@ -14,9 +14,19 @@ jobs:
     name: Build Site
     runs-on: ubuntu-latest
 
+    steps:
+    - name: Checkout local code to establish repo
+      uses: actions/checkout@v2
+
   deploy-site:
     name: Deploy Site
     runs-on: ubuntu-latest
+
+    steps:
+    - name: list files for debugging before copying
+      run: |
+        pwd
+        ls -lRta
 
   # build-site:
   #   name: Build Site
