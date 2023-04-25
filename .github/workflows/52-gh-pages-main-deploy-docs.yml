@@ -1,0 +1,54 @@
+name: "52-gh-pages-main-deploy-docs"
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    
+    steps:
+    # The redundant checkout is to establish a git repo 
+    # so that JamesIves/github-pages-deploy-action@v4 works properly
+    - name: Checkout local code to establish repo
+      uses: actions/checkout@v2
+    
+    - name: Install Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16.x
+    
+    - name: Install NPM packages
+      run: npm ci
+      working-directory: frontend
+
+    - name: Build Storybook
+      working-directory: frontend
+      run: | # Install npm packages and build the Storybook files
+        npx build-storybook --docs
+
+    - name: list files for debugging before copying
+      run: |
+        pwd
+        ls -lRt
+
+    - name: compose web site
+      run: |
+        mkdir site
+        cp -r frontend/docs-index/* site
+        mkdir site/storybook
+        cp -r frontend/storybook-static/* site/storybook
+
+    - name: list files for debugging after copying
+      run: |
+        pwd
+        ls -lRt
+
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: site # The folder the action should deploy.
+        branch: gh-pages
