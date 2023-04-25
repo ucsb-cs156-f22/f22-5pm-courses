@@ -10,58 +10,65 @@ permissions:
   contents: write
 
 jobs: 
-
   build-site:
     name: Build Site
     runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout local code to establish repo
-      uses: actions/checkout@v2
-    
-    - name: Install Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: 16.x
-    
-    - name: Install NPM packages
-      run: npm ci
-      working-directory: frontend
-
-    - name: Build Storybook
-      working-directory: frontend
-      run: | # Install npm packages and build the Storybook files
-        npx build-storybook --docs
-
-    - name: list files for debugging before copying
-      run: |
-        pwd
-        ls -lRta
-
-    - name: compose web site
-      run: |
-        mkdir site
-        cp -r frontend/docs-index/* site
-        mkdir site/storybook
-        cp -r frontend/storybook-static/* site/storybook
-
-    - name: list files for debugging after copying
-      run: |
-        pwd
-        ls -lRta
 
   deploy-site:
-    needs: build
-    name: Deploy to gh-pages branch
+    name: Deploy Site
     runs-on: ubuntu-latest
 
-    - name: list files for debugging after copying
-      run: |
-        pwd
-        ls -lRta
+  # build-site:
+  #   name: Build Site
+  #   runs-on: ubuntu-latest
+    
+  #   steps:
+  #   - name: Checkout local code to establish repo
+  #     uses: actions/checkout@v2
+    
+  #   - name: Install Node.js
+  #     uses: actions/setup-node@v1
+  #     with:
+  #       node-version: 16.x
+    
+  #   - name: Install NPM packages
+  #     run: npm ci
+  #     working-directory: frontend
 
-    - name: Deploy 🚀
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: site # The folder the action should deploy.
-        branch: gh-pages
+  #   - name: Build Storybook
+  #     working-directory: frontend
+  #     run: | # Install npm packages and build the Storybook files
+  #       npx build-storybook --docs
+
+  #   - name: list files for debugging before copying
+  #     run: |
+  #       pwd
+  #       ls -lRta
+
+  #   - name: compose web site
+  #     run: |
+  #       mkdir site
+  #       cp -r frontend/docs-index/* site
+  #       mkdir site/storybook
+  #       cp -r frontend/storybook-static/* site/storybook
+
+  #   - name: list files for debugging after copying
+  #     run: |
+  #       pwd
+  #       ls -lRta
+
+  # deploy-site:
+  #   needs: build
+  #   name: Deploy to gh-pages branch
+  #   runs-on: ubuntu-latest
+
+  #   - name: list files for debugging after copying
+  #     run: |
+  #       pwd
+  #       ls -lRta
+
+  #   - name: Deploy 🚀
+  #     uses: JamesIves/github-pages-deploy-action@v4
+  #     with:
+  #       folder: site # The folder the action should deploy.
+  #       branch: gh-pages
