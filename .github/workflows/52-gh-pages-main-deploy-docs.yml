@@ -50,29 +50,20 @@ jobs:
         pwd
         ls -lRta
 
-  deploy-site:
-    name: Deploy Site
-    runs-on: ubuntu-latest
-    needs: build-site
-
-    steps:
-    - name: list files for debugging before copying
-      run: |
-        pwd
-        ls -lRta
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: site # The folder the action should deploy.
         branch: gh-pages
 
+
   enable-gh-pages:
     name: Enable GitHub Pages
     runs-on: ubuntu-latest
-    needs: deploy-site
+    needs: build-site
 
     steps:
-    - name: list files for debugging before copying
+    - name: Enable GitHub Pages on gh-pages branch
       run: |
         echo '{"source":{"branch":"gh-pages","path":"/"}}' > enable-gh-pages.json
         gh api /repos/OWNER/REPO/pages -X POST \
