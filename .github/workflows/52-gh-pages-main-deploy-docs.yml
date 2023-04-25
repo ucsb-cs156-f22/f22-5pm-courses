@@ -66,4 +66,19 @@ jobs:
         folder: site # The folder the action should deploy.
         branch: gh-pages
 
+  enable-gh-pages:
+    name: Enable GitHub Pages
+    runs-on: ubuntu-latest
+    depends: deploy-site
+
+    steps:
+    - name: list files for debugging before copying
+      run: |
+        echo '{"source":{"branch":"gh-pages","path":"/"}}' > enable-gh-pages.json
+        gh api /repos/OWNER/REPO/pages -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          --input enable-gh-pages.json
+          
+
      
