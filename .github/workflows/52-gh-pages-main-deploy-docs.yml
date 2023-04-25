@@ -53,7 +53,7 @@ jobs:
   deploy-site:
     name: Deploy Site
     runs-on: ubuntu-latest
-    depends: build-site
+    needs: build-site
 
     steps:
     - name: list files for debugging before copying
@@ -69,7 +69,7 @@ jobs:
   enable-gh-pages:
     name: Enable GitHub Pages
     runs-on: ubuntu-latest
-    depends: deploy-site
+    needs: deploy-site
 
     steps:
     - name: list files for debugging before copying
