@@ -34,16 +34,7 @@ jobs:
           BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_CLEANED}}"
           echo "BRANCH=${BRANCH}"
           echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
-      - name: Append name of site to _config.yml
-        working-directory: ./frontend/docs-qa-index
-        run: | 
-          echo "env.BRANCH=${{ env.BRANCH }}"
-          OWNER_PLUS_REPOSITORY=${{github.repository}}
-          OWNER=${{ github.repository_owner }}
-          REPOSITORY=${OWNER_PLUS_REPOSITORY/$OWNER\//}
-          echo "repo: ${OWNER_PLUS_REPOSITORY}" >> _config.yml
-          echo "owner: ${OWNER}" >> _config.yml
-          echo "repo_name: ${REPOSITORY}" >> _config.yml
+    
       - name: Deploy index.md and jekyll files for docs-qa site 🚀
         uses: JamesIves/github-pages-deploy-action@4.2.0
         with:
@@ -52,6 +43,7 @@ jobs:
           folder: frontend/docs-qa-index 
           clean: false 
           target-folder: storybook-qa
+
       - name: Generate .md file to add to branch collection
         working-directory: ./frontend
         run: | 
@@ -68,6 +60,21 @@ jobs:
           echo "pull_request_num: ${{ github.event.pull_request.number}}" >> $FILENAME
           echo "---" >> $FILENAME
           git add docs-qa-index
+          git commit -m "Add branch ${{  env.BRANCH  }} to docs-qa repo"
+          git push origin gh-pages
+
+      - name: Append name of site to _config.yml
+        working-directory: ./frontend/docs-qa-index
+        run: | 
+          git checkout gh-pages
+          echo "env.BRANCH=${{ env.BRANCH }}"
+          OWNER_PLUS_REPOSITORY=${{github.repository}}
+          OWNER=${{ github.repository_owner }}
+          REPOSITORY=${OWNER_PLUS_REPOSITORY/$OWNER\//}
+          echo "repo: ${OWNER_PLUS_REPOSITORY}" >> _config.yml
+          echo "owner: ${OWNER}" >> _config.yml
+          echo "repo_name: ${REPOSITORY}" >> _config.yml
+          git add _config.yml
           git commit -m "Add branch ${{  env.BRANCH  }} to docs-qa repo"
           git push origin gh-pages
 
