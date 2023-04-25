@@ -53,6 +53,7 @@ jobs:
   deploy-site:
     name: Deploy Site
     runs-on: ubuntu-latest
+    depends: build-site
 
     steps:
     - name: list files for debugging before copying
