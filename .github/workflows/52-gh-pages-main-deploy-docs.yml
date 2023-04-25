@@ -9,9 +9,9 @@ on:
 permissions:
   contents: write
 
-jobs:
+jobs: 
 
-  build:
+  build-site:
     name: Build Site
     runs-on: ubuntu-latest
     
@@ -50,7 +50,8 @@ jobs:
         pwd
         ls -lRta
 
-  deploy:
+  deploy-site:
+    needs: build
     name: Deploy to gh-pages branch
     runs-on: ubuntu-latest
 
