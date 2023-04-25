@@ -8,10 +8,10 @@ on:
 env:
   GH_TOKEN: ${{ github.token }}
 
-# Needed for JamesIves/github-pages-deploy-action@v4
 permissions:
-  contents: write
+  contents: write  # Needed for JamesIves/github-pages-deploy-action@v4
   pages: write
+  administration: write
 
 jobs: 
   build-site:
@@ -22,7 +22,6 @@ jobs:
     - name: Checkout local code to establish repo
       uses: actions/checkout@v2
 
-    
     - name: Install Node.js
       uses: actions/setup-node@v1
       with:
@@ -37,10 +36,10 @@ jobs:
       run: | # Install npm packages and build the Storybook files
         npx build-storybook --docs
 
-    - name: list files for debugging before copying
-      run: |
-        pwd
-        ls -lRta
+    # - name: list files for debugging before copying
+    #   run: |
+    #     pwd
+    #     ls -lRta
 
     - name: compose web site
       run: |
@@ -49,17 +48,16 @@ jobs:
         mkdir site/storybook
         cp -r frontend/storybook-static/* site/storybook
 
-    - name: list files for debugging after copying
-      run: |
-        pwd
-        ls -lRta
+    # - name: list files for debugging after copying
+    #   run: |
+    #     pwd
+    #     ls -lRta
 
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: site # The folder the action should deploy.
         branch: gh-pages
-
 
   enable-gh-pages:
     name: Enable GitHub Pages
