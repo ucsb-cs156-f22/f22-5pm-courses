@@ -48,6 +48,7 @@ jobs:
         working-directory: ./frontend
         run: | 
           git checkout gh-pages
+          git pull origin gh-pages
           BRANCH_DIR=docs-qa-index/_branches
           mkdir -p $BRANCH_DIR
           FILENAME=${BRANCH_DIR}/${{ env.BRANCH }}.md
@@ -67,6 +68,7 @@ jobs:
         working-directory: ./frontend/docs-qa-index
         run: | 
           git checkout gh-pages
+          git pull origin gh-pages
           echo "env.BRANCH=${{ env.BRANCH }}"
           OWNER_PLUS_REPOSITORY=${{github.repository}}
           OWNER=${{ github.repository_owner }}
