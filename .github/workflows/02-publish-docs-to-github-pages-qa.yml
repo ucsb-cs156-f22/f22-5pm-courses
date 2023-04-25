@@ -67,10 +67,10 @@ jobs:
           echo "pull_request_url: ${{ github.event.pull_request.html_url}}" >> $FILENAME
           echo "pull_request_num: ${{ github.event.pull_request.number}}" >> $FILENAME
           echo "---" >> $FILENAME
-          git add $FILENAME
+          git add docs-qa-index
           git commit -m "Add branch ${{  env.BRANCH  }} to docs-qa repo"
           git push origin gh-pages
-          
+
       # - name: Pushes branch
       #   uses: dmnemec/copy_file_to_another_repo_action@main
       #   env:
