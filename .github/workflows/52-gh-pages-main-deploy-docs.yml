@@ -68,8 +68,9 @@ jobs:
         echo '{"source":{"branch":"gh-pages","path":"/"}}' > enable-gh-pages.json
         echo ' \
            If next line fails with "Resource not accessible by integration" \
-           then organization owner should navigat to \
-           navigate to https://github.com/organizations/{{ github.repository_owner }}/settings/actions \
+           then organization owner should navigate to \
+           navigate to https://github.com/organizations/${{ github.repository_owner }}/settings/actions \
+           or repo owner can navigate to https://github.com/${{ github.repository }}/settings/actions \
            and set Workflow permissions to Read and Write \
            '
         gh api /repos/${{github.repository}}/pages -X POST \
