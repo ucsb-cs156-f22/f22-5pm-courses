@@ -1,4 +1,4 @@
-# Links 
+# {{site.title}}
 
 * Source Repo: <https://github.com/{{site.repo}}>
 
