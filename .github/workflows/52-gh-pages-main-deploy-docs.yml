@@ -45,6 +45,8 @@ jobs:
         cp -r frontend/docs-index/* site
         mkdir site/storybook
         cp -r frontend/storybook-static/* site/storybook
+        mkdir site/storybook-qa
+        cp -r frontend/docs-qa-index/* site/storybook-qa
 
     # - name: list files for debugging after copying
     #   run: |
