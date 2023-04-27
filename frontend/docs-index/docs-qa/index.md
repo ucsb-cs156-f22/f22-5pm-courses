@@ -1,12 +1,17 @@
-# Links 
+---
+---
+
+## Repos
 
 * Source Repo: <https://github.com/{{site.repo}}>
+* Production Docs Repo: <https://github.com/{{site.repo}}-docs>
+* QA Docs Repo: <https://github.com/{{site.repo}}-docs-qa>
 
-# Documentation
+## Production Documentation
 
-* [Storybook](storybook)
+* <https://{{site.owner}}.github.io/{{site.repo_name}}-docs>
 
-## Pull Request QA Documentation
+## Branches
 
 <style>
 table, th, td {
