@@ -1,0 +1,81 @@
+name: "52-gh-pages-main-deploy-docs"
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+permissions:
+  contents: write  # Needed for JamesIves/github-pages-deploy-action@v4
+
+jobs: 
+  build-site:
+    name: Build Site
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout local code to establish repo
+      uses: actions/checkout@v2
+
+    - name: Install Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16.x
+    
+    - name: Install NPM packages
+      run: npm ci
+      working-directory: frontend
+
+    # - name: Establish gh-pages branch if it doesn't exist yet
+    #   continue-on-error: true
+    #   run: | 
+    #       git checkout -b gh-pages
+
+    - name: Append name of site to _config.yml
+      working-directory: ./frontend/docs-index
+      run: | 
+          # git checkout gh-pages
+          OWNER_PLUS_REPOSITORY=${{github.repository}}
+          OWNER=${{ github.repository_owner }}
+          REPOSITORY=${OWNER_PLUS_REPOSITORY/$OWNER\//}
+          echo "repo: ${OWNER_PLUS_REPOSITORY}" >> _config.yml
+          echo "owner: ${OWNER}" >> _config.yml
+          echo "repo_name: ${REPOSITORY}" >> _config.yml
+          # git add _config.yml
+          # git commit -m "Github Action 52: Append repo, owner, repo_name to _config.yml"
+          # git push origin gh-pages
+
+    - name: Build Storybook
+      working-directory: frontend
+      run: | # Install npm packages and build the Storybook files
+        npx build-storybook --docs
+
+    # - name: list files for debugging before copying
+    #   run: |
+    #     pwd
+    #     ls -lRta
+
+    - name: compose web site
+      run: |
+        mkdir site
+        cp -r frontend/docs-index/* site
+        mkdir site/storybook
+        cp -r frontend/storybook-static/* site/storybook
+        mkdir site/storybook-qa
+        cp -r frontend/docs-qa-index/* site/storybook-qa
+
+    # - name: list files for debugging after copying
+    #   run: |
+    #     pwd
+    #     ls -lRta
+
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: site # The folder the action should deploy.
+        branch: gh-pages
+        clean: true # Automatically remove deleted files from the deploy branch
+
